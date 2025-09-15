@@ -21,7 +21,7 @@ server.registerTool(
   async ({ query }) => {
     try {
       const response = await fetch(
-        `${env.SERVER_URL}/api/agents/generate-page`,
+        `${env.SERVER_URL}/api/agents/generate`,
         {
           method: "POST",
           body: JSON.stringify({ query, secret: env.SECRET }),
