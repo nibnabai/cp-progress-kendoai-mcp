@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "kendoai-mcp": {
+      "name": "kendoai-mcp",
+      "command": "npx",
+      "args": ["tsx", "src/server.ts"],
+      "timeout": 900000,
+      "env": {
+        "SERVER_URL": "http://localhost:3000",
+        "SECRET": "PASTE YOUR SECRET TOKEN HERE"
+      }
+    }
+  }
+}
