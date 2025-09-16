@@ -1,32 +1,32 @@
-import { z } from "zod";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { env } from "./env.js";
+import { z } from 'zod';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { env } from './env.js';
 
 const server = new McpServer({
-  name: "kendoai-mcp",
-  version: "1.0.0",
+  name: 'kendoai-mcp',
+  version: '1.0.0'
 });
 
 server.registerTool(
-  "generate_page",
+  'generate_page',
   {
-    title: "Generate Page",
+    title: 'Generate Page',
     description:
       "Use this tool whenever the user wants to create a page with Kendo React components. Generates a complete page based on the user's requirements and specifications.",
     inputSchema: {
-      query: z.string().describe("The user query for page generation"),
-    },
+      query: z.string().describe('The user query for page generation')
+    }
   },
   async ({ query }) => {
     try {
-      const response = await fetch(
-        `${env.SERVER_URL}/api/agents/generate`,
-        {
-          method: "POST",
-          body: JSON.stringify({ query, secret: env.SECRET }),
+      const response = await fetch(`${env.SERVER_URL}/api/agents/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
         },
-      );
+        body: JSON.stringify({ query, secret: env.SECRET })
+      });
 
       const result = await response.json();
 
@@ -34,14 +34,14 @@ server.registerTool(
         return {
           content: [
             {
-              type: "text",
+              type: 'text',
               text: JSON.stringify({
                 success: false,
                 error: result.error,
-                timestamp: new Date().toISOString(),
-              }),
-            },
-          ],
+                timestamp: new Date().toISOString()
+              })
+            }
+          ]
         };
       }
 
@@ -79,27 +79,27 @@ server.registerTool(
       return {
         content: [
           {
-            type: "text",
-            text: instructions,
-          },
-        ],
+            type: 'text',
+            text: instructions
+          }
+        ]
       };
     } catch (error) {
-      console.error("❌ Page Generation MCP: Error:", error);
+      console.error('❌ Page Generation MCP: Error:', error);
       return {
         content: [
           {
-            type: "text",
+            type: 'text',
             text: JSON.stringify({
               success: false,
-              error: error instanceof Error ? error.message : "Unknown error",
-              timestamp: new Date().toISOString(),
-            }),
-          },
-        ],
+              error: error instanceof Error ? error.message : 'Unknown error',
+              timestamp: new Date().toISOString()
+            })
+          }
+        ]
       };
     }
-  },
+  }
 );
 
 async function main() {
@@ -111,17 +111,17 @@ async function main() {
   }
 }
 
-process.on("SIGINT", async () => {
-  console.log("\n🛑 Page Generation MCP: Shutting down...");
+process.on('SIGINT', async () => {
+  console.log('\n🛑 Page Generation MCP: Shutting down...');
   process.exit(0);
 });
 
-process.on("SIGTERM", async () => {
-  console.log("\n🛑 Page Generation MCP: Shutting down...");
+process.on('SIGTERM', async () => {
+  console.log('\n🛑 Page Generation MCP: Shutting down...');
   process.exit(0);
 });
 
 main().catch((error) => {
-  console.error("❌ Page Generation MCP: Fatal error:", error);
+  console.error('❌ Page Generation MCP: Fatal error:', error);
   process.exit(1);
 });
