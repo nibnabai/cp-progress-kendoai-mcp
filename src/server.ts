@@ -51,10 +51,8 @@ server.registerTool(
     GENERATED CODE:
     ${JSON.stringify(result.data.kendoComponents.code, null, 2)}
 
-    FILE PATH: ${result.data.routePath}
-
     INSTRUCTIONS:
-    1. Create the file at the specified path with the generated code
+    1. Create the file with the generated code
     2. Check available scripts in package.json and run them iteratively until all errors are resolved:
        - Run 'npm run build' or 'pnpm build' to compile the page
        - Run 'npm run lint' or 'pnpm lint' to check for ESLint errors
