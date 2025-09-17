@@ -170,28 +170,24 @@ server.registerTool(
         'The original user request for page creation. Must be identical to the query used in planner_tool ' +
         'to maintain consistency and context throughout the generation pipeline.'
       ),
-      executionPlan: z.object({
-        id: z.string().describe('Unique identifier for the execution plan'),
-        userQuery: z.string().describe('Original user query that generated this plan'),
-        plan: z.string().describe(
-          'Complete execution plan in markdown format from planner_tool. Should include component breakdown, ' +
-          'layout structure, state management requirements, and implementation steps.'
-        ),
-        createdAt: z.date().default(() => new Date()).describe('Timestamp when the plan was created')
-      }).describe(
-        'The complete execution plan object returned by planner_tool. Contains all strategic information ' +
-        'needed to generate the appropriate component structure.'
-      )
+      plan: z.string().describe(
+        'Complete execution plan in markdown format from planner_tool. Should include component breakdown, ' +
+        'layout structure, state management requirements, and implementation steps.'
+      ),
     }
   },
-  async ({ executionPlan, query }) => {
+  async ({ plan, query }) => {
     try {
       const response = await fetch(`${env.SERVER_URL}/api/agents/structure/generate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ executionPlan, query, secret: env.SECRET })
+        body: JSON.stringify({ executionPlan: {
+          id: `plan-${Date.now()}`,
+          userQuery: query,
+          plan,
+        }, query, secret: env.SECRET })
       });
 
       const result = await response.json();
@@ -230,7 +226,7 @@ server.registerTool(
         **NEXT STEP:** Use the 'merger_tool' with this ACT structure to generate the final Kendo React code.
 
         ### Component Structure:
-        ${result.data.structure}
+        ${JSON.stringify(result.data.structure)}
 
         ### Instructions for Next Steps:
         1. **Validate the structure** - Review the component hierarchy and ensure it matches your requirements
