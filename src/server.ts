@@ -226,7 +226,7 @@ server.registerTool(
         **NEXT STEP:** Use the 'merger_tool' with this ACT structure to generate the final Kendo React code.
 
         ### Component Structure:
-        ${JSON.stringify(result.data.structure)}
+        ${JSON.stringify(result.data.structure, null, 2)}
 
         ### Instructions for Next Steps:
         1. **Validate the structure** - Review the component hierarchy and ensure it matches your requirements
@@ -372,7 +372,7 @@ server.registerTool(
 
         ### Generated Code:
         \`\`\`tsx
-        ${result.data.kendoComponents.code}
+        ${JSON.stringify(result.data.code.mainComponent, null, 2)}
         \`\`\`
 
         ## 📋 Implementation Checklist
