@@ -34,22 +34,27 @@ server.registerTool(
       - Implementation priority and dependencies
     `,
     inputSchema: {
-      query: z.string().describe(
-        'The complete user request for page creation. Include all requirements, features, ' +
-        'UI elements, functionality, styling preferences, and any specific Kendo components mentioned. ' +
-        'The more detailed the query, the better the generated plan will be.'
-      )
+      query: z
+        .string()
+        .describe(
+          'The complete user request for page creation. Include all requirements, features, ' +
+            'UI elements, functionality, styling preferences, and any specific Kendo components mentioned. ' +
+            'The more detailed the query, the better the generated plan will be.'
+        )
     }
   },
   async ({ query }) => {
     try {
-      const response = await fetch(`${env.SERVER_URL}/api/agents/planner/generate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ query, secret: env.SECRET })
-      });
+      const response = await fetch(
+        `${env.SERVER_URL}/api/agents/planner/generate`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ query, secret: env.SECRET })
+        }
+      );
 
       const result = await response.json();
 
@@ -62,7 +67,10 @@ server.registerTool(
                 ## ❌ Planner Tool API Error
 
                 **Error Details:**
-                ${result.error || 'Unknown error occurred while generating the execution plan'}
+                ${
+                  result.error ||
+                  'Unknown error occurred while generating the execution plan'
+                }
 
                 **Troubleshooting Steps:**
                 1. **Check your query** - Ensure it clearly describes what you want to build
@@ -116,7 +124,9 @@ server.registerTool(
               ## ⚠️ Planner Tool Network Error
 
               **Connection Error:**
-              ${error instanceof Error ? error.message : 'Unknown network error'}
+              ${
+                error instanceof Error ? error.message : 'Unknown network error'
+              }
 
               **Possible Causes:**
               1. **Server unavailable** - The planning service endpoint may be down
@@ -166,29 +176,40 @@ server.registerTool(
       - MCP queries for detailed component documentation
     `,
     inputSchema: {
-      query: z.string().describe(
-        'The original user request for page creation. Must be identical to the query used in planner_tool ' +
-        'to maintain consistency and context throughout the generation pipeline.'
-      ),
-      plan: z.string().describe(
-        'Complete execution plan in markdown format from planner_tool. Should include component breakdown, ' +
-        'layout structure, state management requirements, and implementation steps.'
-      ),
+      query: z
+        .string()
+        .describe(
+          'The original user request for page creation. Must be identical to the query used in planner_tool ' +
+            'to maintain consistency and context throughout the generation pipeline.'
+        ),
+      plan: z
+        .string()
+        .describe(
+          'Complete execution plan in markdown format from planner_tool. Should include component breakdown, ' +
+            'layout structure, state management requirements, and implementation steps.'
+        )
     }
   },
   async ({ plan, query }) => {
     try {
-      const response = await fetch(`${env.SERVER_URL}/api/agents/structure/generate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ executionPlan: {
-          id: `plan-${Date.now()}`,
-          userQuery: query,
-          plan,
-        }, query, secret: env.SECRET })
-      });
+      const response = await fetch(
+        `${env.SERVER_URL}/api/agents/structure/generate`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            executionPlan: {
+              id: `plan-${Date.now()}`,
+              userQuery: query,
+              plan
+            },
+            query,
+            secret: env.SECRET
+          })
+        }
+      );
 
       const result = await response.json();
 
@@ -201,7 +222,10 @@ server.registerTool(
                 ## ❌ Structure Tool API Error
 
                 **Error Details:**
-                ${result.error || 'Unknown error occurred while generating the component structure'}
+                ${
+                  result.error ||
+                  'Unknown error occurred while generating the component structure'
+                }
 
                 **Troubleshooting Steps:**
                 1. **Verify execution plan** - Ensure you're passing the complete plan from planner_tool
@@ -261,7 +285,9 @@ server.registerTool(
               ## ⚠️ Structure Tool Network Error
 
               **Connection Error:**
-              ${error instanceof Error ? error.message : 'Unknown network error'}
+              ${
+                error instanceof Error ? error.message : 'Unknown network error'
+              }
 
               **Possible Causes:**
               1. **Server unavailable** - The structure service endpoint may be down
@@ -316,21 +342,24 @@ server.registerTool(
     inputSchema: {
       actStructure: ACTComponentSchema.describe(
         'The complete Abstract Component Tree structure generated by structure_tool. This hierarchical ' +
-        'structure defines the component layout, types, descriptions, and relationships. Must contain ' +
-        'all necessary information for code generation including component types, nesting hierarchy, ' +
-        'and any specific Kendo component configurations.'
+          'structure defines the component layout, types, descriptions, and relationships. Must contain ' +
+          'all necessary information for code generation including component types, nesting hierarchy, ' +
+          'and any specific Kendo component configurations.'
       )
     }
   },
   async ({ actStructure }) => {
     try {
-      const response = await fetch(`${env.SERVER_URL}/api/agents/merger/generate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ actStructure, secret: env.SECRET })
-      });
+      const response = await fetch(
+        `${env.SERVER_URL}/api/agents/merger/generate`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ actStructure, secret: env.SECRET })
+        }
+      );
 
       const result = await response.json();
 
@@ -343,7 +372,10 @@ server.registerTool(
                 ## ❌ Code Generator API Error
 
                 **Error Details:**
-                ${result.error || 'Unknown error occurred while generating the Kendo React code'}
+                ${
+                  result.error ||
+                  'Unknown error occurred while generating the Kendo React code'
+                }
 
                 **Troubleshooting Steps:**
                 1. **Verify ACT structure** - Ensure you're passing the complete Abstract Component Tree from structure_tool
@@ -383,9 +415,15 @@ server.registerTool(
         3. **Check file structure** - Verify the component follows React best practices
 
         ### Step 2: Install Required Dependencies
-        Before running any scripts, ensure all Kendo React packages are installed:
+        **First, check your package.json for existing Kendo dependencies:**
         \`\`\`bash
-        # Check if these packages are in package.json, install if missing:
+        # Check current Kendo dependencies in package.json
+        cat package.json | grep -i kendo
+        \`\`\`
+
+        **Then install missing Kendo React packages:**
+        \`\`\`bash
+        # Install commonly needed Kendo packages (only if not already present):
         npm install @progress/kendo-react-grid
         npm install @progress/kendo-react-inputs
         npm install @progress/kendo-react-layout
@@ -393,6 +431,13 @@ server.registerTool(
         npm install @progress/kendo-react-dateinputs
         npm install @progress/kendo-react-dropdowns
         npm install @progress/kendo-theme-default
+        \`\`\`
+
+        **After installation, check lints to identify any missing dependencies:**
+        \`\`\`bash
+        # Run linter to see what dependencies might be missing
+        npm run lint
+        \`\`\`
         \`\`\`
 
         ### Step 3: Validation & Error Resolution (Run in Order)
@@ -492,7 +537,9 @@ server.registerTool(
               ## ⚠️ Code Generator Network Error
 
               **Connection Error:**
-              ${error instanceof Error ? error.message : 'Unknown network error'}
+              ${
+                error instanceof Error ? error.message : 'Unknown network error'
+              }
 
               **Possible Causes:**
               1. **Server unavailable** - The code generation service endpoint may be down
